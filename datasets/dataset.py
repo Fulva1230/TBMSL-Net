@@ -198,7 +198,7 @@ class FGVC_aircraft():
             return len(self.test_img_label)
 
 
-class Dataframedataset(torch.utils.data.IterableDataset):
+class Dataframedataset(torch.utils.data.Dataset):
     def __init__(self, directory, dataframe, input_size):
         self.directory = directory
         self.dataframe = dataframe
@@ -207,23 +207,6 @@ class Dataframedataset(torch.utils.data.IterableDataset):
             transforms.ToTensor(),
             transforms.Normalize(mean=[-1.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
-
-        def generatorFun():
-            for (i, line) in enumerate(self.dataframe.iloc):
-                try:
-                    img = Image.open(os.path.join(self.directory, line['image_id']), mode='r')
-                    inputTensor = self.transform(img)
-                    outputTensor = {
-                        'A': 0,
-                        'B': 1,
-                        'C': 2
-                    }.get(line['label'])
-                    yield (inputTensor, outputTensor)
-                except FileNotFoundError:
-                    pass
-                except OSError:
-                    pass
-        self.generator = generatorFun()
 
     def __getitem__(self, item):
         for i in range(item, len(self)):
@@ -246,5 +229,3 @@ class Dataframedataset(torch.utils.data.IterableDataset):
     def __len__(self):
         return len(self.dataframe)
 
-    def __iter__(self):
-        return self.generator
