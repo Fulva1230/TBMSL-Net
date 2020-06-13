@@ -26,14 +26,14 @@ def auto_load_resume(model, path, status):
     elif status == 'test':
         print('Load model from', path)
         checkpoint = torch.load(path, map_location='cpu')
-        new_state_dict = OrderedDict()
-        for k, v in checkpoint['model_state_dict'].items():
-            if 'module.' == k[:7]:
-                name = k[7:]  # remove `module.`
-            else:
-                name = k
-            new_state_dict[name] = v
-        model.load_state_dict(new_state_dict)
+        # new_state_dict = OrderedDict()
+        # for k, v in checkpoint['model_state_dict'].items():
+        #     if 'module.' == k[:7]:
+        #         name = k[7:]  # remove `module.`
+        #     else:
+        #         name = k
+        #     new_state_dict[name] = v
+        model.load_state_dict(checkpoint['model_state_dict'])
         epoch = checkpoint['epoch']
         print('Resume from %s' % path)
         return epoch
