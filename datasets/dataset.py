@@ -4,6 +4,8 @@ import os
 from PIL import Image
 from torchvision import transforms
 import torch
+import pandas
+
 
 class CUB():
     def __init__(self, input_size, root, is_train=True, data_len=None):
@@ -89,6 +91,7 @@ class CUB():
         else:
             return len(self.test_label)
 
+
 class STANFORD_CAR():
     def __init__(self, input_size, root, is_train=True, data_len=None):
         self.input_size = input_size
@@ -101,12 +104,13 @@ class STANFORD_CAR():
         train_img_label = []
         test_img_label = []
         for line in train_label_file:
-            train_img_label.append([os.path.join(train_img_path,line[:-1].split(' ')[0]), int(line[:-1].split(' ')[1])-1])
+            train_img_label.append(
+                [os.path.join(train_img_path, line[:-1].split(' ')[0]), int(line[:-1].split(' ')[1]) - 1])
         for line in test_label_file:
-            test_img_label.append([os.path.join(test_img_path,line[:-1].split(' ')[0]), int(line[:-1].split(' ')[1])-1])
+            test_img_label.append(
+                [os.path.join(test_img_path, line[:-1].split(' ')[0]), int(line[:-1].split(' ')[1]) - 1])
         self.train_img_label = train_img_label[:data_len]
         self.test_img_label = test_img_label[:data_len]
-
 
     def __getitem__(self, index):
         if self.is_train:
@@ -132,7 +136,6 @@ class STANFORD_CAR():
             img = transforms.ToTensor()(img)
             img = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])(img)
 
-
         return img, target
 
     def __len__(self):
@@ -140,6 +143,7 @@ class STANFORD_CAR():
             return len(self.train_img_label)
         else:
             return len(self.test_img_label)
+
 
 class FGVC_aircraft():
     def __init__(self, input_size, root, is_train=True, data_len=None):
@@ -153,9 +157,11 @@ class FGVC_aircraft():
         train_img_label = []
         test_img_label = []
         for line in train_label_file:
-            train_img_label.append([os.path.join(train_img_path,line[:-1].split(' ')[0]), int(line[:-1].split(' ')[1])-1])
+            train_img_label.append(
+                [os.path.join(train_img_path, line[:-1].split(' ')[0]), int(line[:-1].split(' ')[1]) - 1])
         for line in test_label_file:
-            test_img_label.append([os.path.join(test_img_path,line[:-1].split(' ')[0]), int(line[:-1].split(' ')[1])-1])
+            test_img_label.append(
+                [os.path.join(test_img_path, line[:-1].split(' ')[0]), int(line[:-1].split(' ')[1]) - 1])
         self.train_img_label = train_img_label[:data_len]
         self.test_img_label = test_img_label[:data_len]
 
@@ -190,3 +196,50 @@ class FGVC_aircraft():
             return len(self.train_img_label)
         else:
             return len(self.test_img_label)
+
+
+class Dataframedataset(torch.utils.data.IterableDataset):
+    def __init__(self, directory, dataframe, input_size):
+        self.directory = directory
+        self.dataframe = dataframe
+        self.transform = transforms.Compose([
+            transforms.Resize(input_size),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[-1.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ])
+
+    def __getitem__(self, item):
+        for i in range(item, len(self)):
+            line = self.dataframe.iloc[i]
+            try:
+                img = Image.open(os.path.join(self.directory, line['image_id']), mode='r')
+                inputTensor = self.transform(img)
+                outputTensor = {
+                    'A': 0,
+                    'B': 1,
+                    'C': 2
+                }.get(line['label'])
+                return (inputTensor, outputTensor)
+            except FileNotFoundError:
+                pass
+            except OSError:
+                pass
+
+    def __len__(self):
+        return len(self.dataframe)
+
+    def __iter__(self):
+        for (i, line) in enumerate(self.dataframe.iloc):
+            try:
+                img = Image.open(os.path.join(self.directory, line['image_id']), mode='r')
+                inputTensor = self.transform(img)
+                outputTensor = {
+                    'A': 0,
+                    'B': 1,
+                    'C': 2
+                }.get(line['label'])
+                yield (inputTensor, outputTensor)
+            except FileNotFoundError:
+                pass
+            except OSError:
+                pass

@@ -5,7 +5,7 @@ import numpy as np
 CUDA_VISIBLE_DEVICES = '0'  # The current version only supports one GPU training
 
 
-set = 'CAR'  # Different dataset with different
+set = 'mango'  # Different dataset with different
 model_name = ''
 
 batch_size = 6
@@ -55,6 +55,10 @@ else:
         model_path = './checkpoint/aircraft'      # pth save path
         root = './datasets/FGVC-aircraft'  # dataset path
         num_classes = 100
+    elif set == 'mango':
+        model_path = './checkpoint/mango'
+        root = './datasets/Mango'
+        num_classes = 3
 
 
 '''indice2coordinates'''
