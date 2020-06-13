@@ -224,6 +224,7 @@ class Dataframedataset(torch.utils.data.IterableDataset):
                 pass
             except OSError:
                 pass
+        raise IndexError()
 
     def __len__(self):
         return len(self.dataframe)
