@@ -16,7 +16,7 @@ def train(model,
           start_epoch,
           end_epoch,
           save_interval):
-
+    device = torch.device('cuda:0')
     for epoch in range(start_epoch + 1, end_epoch + 1):
         model.train()
 
@@ -29,7 +29,7 @@ def train(model,
                 images, labels, _, _ = data
             else:
                 images, labels = data
-            images, labels = images.cuda(), labels.cuda()
+            images, labels = images.to(device), labels.to(device)
 
             optimizer.zero_grad()
 

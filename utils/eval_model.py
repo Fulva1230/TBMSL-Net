@@ -10,6 +10,7 @@ from utils.vis import image_with_boxes
 def eval(model, testloader, criterion, status, save_path, epoch):
     model.eval()
     print('Evaluating')
+    device = torch.device('cuda:0')
 
     raw_loss_sum = 0
     local_loss_sum = 0
@@ -25,8 +26,8 @@ def eval(model, testloader, criterion, status, save_path, epoch):
                 images, labels, boxes, scale = data
             else:
                 images, labels = data
-            images = images.cuda()
-            labels = labels.cuda()
+            images = images.to(device)
+            labels = labels.to(device)
 
             proposalN_windows_score,proposalN_windows_logits, indices, \
             window_scores, coordinates, raw_logits, local_logits, local_imgs = model(images, epoch, i, status)

@@ -17,7 +17,7 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = CUDA_VISIBLE_DEVICES
 
 def main():
-
+    device = torch.device('cuda:0')
     #加载数据
     trainloader, testloader = read_dataset(input_size, batch_size, root, set)
 
@@ -42,7 +42,7 @@ def main():
     # define optimizers
     optimizer = torch.optim.SGD(parameters, lr=lr, momentum=0.9, weight_decay=weight_decay)
 
-    model = model.cuda()  # 部署在GPU
+    model = model.to(device)  # 部署在GPU
 
     scheduler = MultiStepLR(optimizer, milestones=lr_milestones, gamma=lr_decay_rate)
 
