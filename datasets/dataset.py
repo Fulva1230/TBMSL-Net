@@ -208,6 +208,23 @@ class Dataframedataset(torch.utils.data.IterableDataset):
             transforms.Normalize(mean=[-1.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
 
+        def generatorFun():
+            for (i, line) in enumerate(self.dataframe.iloc):
+                try:
+                    img = Image.open(os.path.join(self.directory, line['image_id']), mode='r')
+                    inputTensor = self.transform(img)
+                    outputTensor = {
+                        'A': 0,
+                        'B': 1,
+                        'C': 2
+                    }.get(line['label'])
+                    yield (inputTensor, outputTensor)
+                except FileNotFoundError:
+                    pass
+                except OSError:
+                    pass
+        self.generator = generatorFun()
+
     def __getitem__(self, item):
         for i in range(item, len(self)):
             line = self.dataframe.iloc[i]
@@ -230,17 +247,4 @@ class Dataframedataset(torch.utils.data.IterableDataset):
         return len(self.dataframe)
 
     def __iter__(self):
-        for (i, line) in enumerate(self.dataframe.iloc):
-            try:
-                img = Image.open(os.path.join(self.directory, line['image_id']), mode='r')
-                inputTensor = self.transform(img)
-                outputTensor = {
-                    'A': 0,
-                    'B': 1,
-                    'C': 2
-                }.get(line['label'])
-                yield (inputTensor, outputTensor)
-            except FileNotFoundError:
-                pass
-            except OSError:
-                pass
+        return self.generator
