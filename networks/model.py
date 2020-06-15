@@ -84,7 +84,7 @@ class MainNet(nn.Module):
         super(MainNet, self).__init__()
         self.num_classes = num_classes
         self.proposalN = proposalN
-        self.pretrained_model = resnet.resnet50(pretrained=True, pth_path=pretrain_path)
+        self.pretrained_model = resnet.resnext50_32x4d(pretrain_path)
         self.rawcls_net = nn.Linear(channels, num_classes)
         self.APPM = APPM()
 

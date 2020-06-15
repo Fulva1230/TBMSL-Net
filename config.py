@@ -4,7 +4,6 @@ import numpy as np
 
 CUDA_VISIBLE_DEVICES = '0'  # The current version only supports one GPU training
 
-
 set = 'mango'  # Different dataset with different
 model_name = ''
 
@@ -24,7 +23,6 @@ input_size = 448
 
 # The pth path of pretrained model
 pretrain_path = './models/pretrained/resnet50-19c8e357.pth'
-
 
 if set == 'CUB':
     model_path = './checkpoint/cub'  # pth save path
@@ -48,25 +46,27 @@ else:
               [8, 8], [6, 10], [10, 6], [7, 9], [9, 7],
               [10, 10], [9, 11], [11, 9], [8, 12], [12, 8]]
     if set == 'CAR':
-        model_path = './checkpoint/car'      # pth save path
+        model_path = './checkpoint/car'  # pth save path
         root = './datasets/Stanford_Cars'  # dataset path
         num_classes = 196
     elif set == 'Aircraft':
-        model_path = './checkpoint/aircraft'      # pth save path
+        model_path = './checkpoint/aircraft'  # pth save path
         root = './datasets/FGVC-aircraft'  # dataset path
         num_classes = 100
     elif set == 'mango':
+        N_list = [1, 1, 1]
+        proposalN = sum(N_list)
         model_path = './checkpoint/mango'
         root = './datasets/Mango'
         num_classes = 3
 
-
 '''indice2coordinates'''
 window_nums = compute_window_nums(ratios, stride, input_size)
-indices_ndarrays = [np.arange(0,window_num).reshape(-1,1) for window_num in window_nums]
-coordinates = [indices2coordinates(indices_ndarray, stride, input_size, ratios[i]) for i, indices_ndarray in enumerate(indices_ndarrays)] # 每个window在image上的坐标
+indices_ndarrays = [np.arange(0, window_num).reshape(-1, 1) for window_num in window_nums]
+coordinates = [indices2coordinates(indices_ndarray, stride, input_size, ratios[i]) for i, indices_ndarray in
+               enumerate(indices_ndarrays)]  # 每个window在image上的坐标
 coordinates_cat = np.concatenate(coordinates, 0)
-window_milestones = [sum(window_nums[:i+1]) for i in range(len(window_nums))]
+window_milestones = [sum(window_nums[:i + 1]) for i in range(len(window_nums))]
 if set == 'CUB':
     window_nums_sum = [0, sum(window_nums[:3]), sum(window_nums[3:6]), sum(window_nums[6:])]
 else:
