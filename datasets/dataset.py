@@ -203,7 +203,8 @@ class Dataframedataset(torch.utils.data.Dataset):
         self.directory = directory
         self.dataframe = dataframe
         self.transform = transforms.Compose([
-            transforms.Resize(input_size),
+            transforms.Resize((self.input_size, self.input_size), Image.BILINEAR),
+            transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             transforms.Normalize(mean=[-1.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
