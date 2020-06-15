@@ -35,13 +35,13 @@ def read_dataset(input_size, batch_size, root, set):
     elif set == 'mango':
         print('Loading Mango trainset')
         traindf = pandas.read_csv(os.path.join(root, 'filteredTrain.csv'))
-        trainfolder = '/content/drive/Shared drives/Mango_Robot_vision/yun-shuo/MangoSegDetectron2/transformedTrain'
+        trainfolder = '/content/drive/Shared drives/Mango_Robot_vision/materials/C1-P1_Train'
         traindataset = dataset.Dataframedataset(trainfolder, traindf, input_size)
         trainloader = torch.utils.data.DataLoader(traindataset, batch_size=batch_size, shuffle=False, num_workers=8,
                                                   drop_last=False)
         print('Loading Mango testset')
         testdf = pandas.read_csv(os.path.join(root, 'dev.csv'))
-        testfolder = '/content/drive/Shared drives/Mango_Robot_vision/yun-shuo/MangoSegDetectron2/transformedDev'
+        testfolder = '/content/drive/Shared drives/Mango_Robot_vision/materials/C1-P1_Dev'
         testset = dataset.Dataframedataset(testfolder, testdf, input_size)
         testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=8,
                                                  drop_last=False)
